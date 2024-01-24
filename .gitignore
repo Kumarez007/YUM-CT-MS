@@ -1,0 +1,45 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+beneficiary-service/01-beneficiary-service-pipeline.yml
+
+user-access-service/01-user-access-service-pipeline.yml
+
+payment-service/01-payment-service-pipeline.yml
+
+grievance-service/01-grievance-service-pipeline.yml
+
+common-gateway/01-common-gateway-pipeline.yml
+
+01-common-pipeline.yml

@@ -1,0 +1,52 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: Maven@3
+  displayName: 'Maven pom.xml'
+  inputs:
+    publishJUnitResults: false
+- task: Docker@0
+  displayName: 'Build an image'
+  inputs:
+    containerregistrytype: 'Azure Container Registry'
+    azureSubscription: 'YemenAzure'
+    azureContainerRegistry: '{"loginServer":"yemenproject.azurecr.io", "id" : "/subscriptions/2210be5d-f3e3-4e26-9ea7-3c9a4d8ec845/resourceGroups/UNICEF-YCT-DEV/providers/Microsoft.ContainerRegistry/registries/Yemenproject"}'
+    action: 'Build an image'
+    dockerFile: 'Dockerfile'
+    imageName: 'yemenbase:$(Build.BuildId)'
+    additionalImageTags: '$(Build.BuildId)'
+    includeSourceTags: true
+    includeLatestTag: true
+- task: Docker@0
+  displayName: 'Push an image'
+  inputs:
+    containerregistrytype: 'Azure Container Registry'
+    azureSubscription: 'YemenAzure'
+    azureContainerRegistry: '{"loginServer":"yemenproject.azurecr.io", "id" : "/subscriptions/2210be5d-f3e3-4e26-9ea7-3c9a4d8ec845/resourceGroups/UNICEF-YCT-DEV/providers/Microsoft.ContainerRegistry/registries/Yemenproject"}'
+    action: 'Push an image'
+    imageName: 'yemenbase:$(Build.BuildId)'
+    additionalImageTags: '$(Build.BuildId)'
+    includeSourceTags: true
+    includeLatestTag: true
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+  inputs:
+    SourceFolder: '$(system.defaultworkingdirectory)'
+    Contents: '**/*.jar'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+  condition: succeededOrFailed()
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+  condition: succeededOrFailed()

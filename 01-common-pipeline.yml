@@ -1,0 +1,42 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+      - yct-dev  #branch names which will trigger a build 
+      
+  paths:
+    exclude:
+      - common-gateway # file paths which must match to trigger a build
+      - beneficiary-service
+      - grievance-service
+      - issue-log-service
+      - messages-service
+      - payment-service
+      - user-access-service
+
+pool:
+  vmImage: 'ubuntu-latest'
+variables:
+  ## Add this under variables section in the pipeline
+  #azureSubscription: 'webapp-linux'
+  dockerRegistryServiceConnection: 'PMU-DEV-ACR'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  app: 'dev/yct-common'
+  imageRepository: '$(app)'
+  tag: 'latest'
+  #tag: '$(Build.BuildId)'
+
+steps:
+- task: Docker@2
+  displayName: Build and push image to container registry
+  inputs:
+    command: buildAndPush
+    repository: $(imageRepository)
+    dockerfile: $(dockerfilePath)
+    containerRegistry: $(dockerRegistryServiceConnection)
+    tags: |
+      $(tag)
